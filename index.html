@@ -3,16 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AJAX Project</title>
+  <title>Image Filter App</title>
   <link rel="icon" href="images/favicon.ico">
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+    integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
   <header>
   </header>
   <main>
+    <h1>
+      Apply filters to your images
+    </h1>
+    <form action="">
+      <label for="image" class="upload-img">Upload an image</label>
+      <input type="file" accept="image/png, image/jpg, image/jpeg" name="image" id="image">
+    </form>
+
+    <div class="container">
+      <div class="row flex-wrap">
+        <div class="column-full">
+          <canvas></canvas>
+        </div>
+        <div class="column-halves">
+          <div class="button">
+            <button id="grayscale">Grayscale</button>
+            <button id="monotone">Blue Monoton</button>
+          </div>
+        </div>
+        <div class="column-halves">
+          <button id="reset">Reset</button>
+          <a id="download">
+            <i class="fa-solid fa-download"></i>
+            <span>Download</span>
+          </a>
+        </div>
+      </div>
+    </div>
   </main>
   <script src="js/data.js"></script>
   <script src="js/main.js"></script>
