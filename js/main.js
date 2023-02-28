@@ -7,6 +7,7 @@ const reset = document.getElementById('reset');
 // const download = document.getElementById('download');
 const input = document.getElementById('image');
 const lowPoly = document.getElementById('lowpoly');
+const lowPolyTriangle = document.getElementById('lowpolyTriangle');
 
 let imageWidth = null;
 let imageHeight = null;
@@ -89,7 +90,7 @@ const resetFilter = () => {
 const applyLowpoly = () => {
   const image = context.getImageData(0, 0, imageWidth, imageHeight);
   const imgData = image.data;
-  const pixel = 10;
+  const pixel = 20;
   for (let y = 0; y < image.height; y += pixel) {
     for (let x = 0; x < image.width; x += pixel) {
       let counter = 0;
@@ -122,7 +123,68 @@ const applyLowpoly = () => {
   context.putImageData(image, 0, 0);
 };
 
+const applyLowpolyTriangle = () => {
+  const image = context.getImageData(0, 0, imageWidth, imageHeight);
+  const imgData = image.data;
+  const pixel = 15;
+  const pixelArray = [3, 1];
+  let pixelQuantityPerTri = 3;
+  for (let p = 5; p < (2 * pixel) + 1; p += 2) {
+    pixelArray.unshift(p);
+    pixelQuantityPerTri += p;
+  }
+  for (let y = 0; y < image.height; y += pixel - 1) {
+    for (let x = 0; x < image.width; x += (pixel * 2)) {
+      let topTriRed = 0;
+      let topTriGreen = 0;
+      let topTriBlue = 0;
+      for (let i = 0; i < pixelArray.length; i++) {
+        for (let j = 0; j < pixelArray[i]; j++) {
+          topTriRed += imgData[((y + i) * 4 * image.width) + ((x + i) * 4 + (4 * j))];
+          topTriGreen += imgData[((y + i) * 4 * image.width) + ((x + i) * 4 + 1 + (4 * j))];
+          topTriBlue += imgData[((y + i) * 4 * image.width) + ((x + i) * 4 + 2 + (4 * j))];
+        }
+      }
+
+      let botTriRed = 0;
+      let botTriGreen = 0;
+      let botTriBlue = 0;
+      for (let i = 0; i < pixelArray.length; i++) {
+        for (let j = 0; j < pixelArray[i]; j++) {
+          botTriRed += imgData[((y + pixel - i) * 4 * image.width) + ((x + pixel + 1 + i) * 4 + (4 * j) - 1)];
+          botTriGreen += imgData[((y + pixel - i) * 4 * image.width) + ((x + pixel + 1 + i) * 4 + 1 + (4 * j) - 1)];
+          botTriBlue += imgData[((y + pixel - i) * 4 * image.width) + ((x + pixel + 1 + i) * 4 + 2 + (4 * j) - 1)];
+        }
+      }
+
+      const avgTopTriRed = topTriRed / pixelQuantityPerTri;
+      const avgTopTriGreen = topTriGreen / pixelQuantityPerTri;
+      const avgTopTriBlue = topTriBlue / pixelQuantityPerTri;
+      for (let i = 0; i < pixelArray.length; i++) {
+        for (let j = 0; j < pixelArray[i]; j++) {
+          imgData[((y + i) * 4 * image.width) + ((x + i) * 4 + (4 * j))] = avgTopTriRed;
+          imgData[((y + i) * 4 * image.width) + ((x + i) * 4 + 1 + (4 * j))] = avgTopTriGreen;
+          imgData[((y + i) * 4 * image.width) + ((x + i) * 4 + 2 + (4 * j))] = avgTopTriBlue;
+        }
+      }
+
+      const avgBotTriRed = botTriRed / pixelQuantityPerTri;
+      const avgBotTriGreen = botTriGreen / pixelQuantityPerTri;
+      const avgBotTriBlue = botTriBlue / pixelQuantityPerTri;
+      for (let i = 0; i < pixelArray.length; i++) {
+        for (let j = 0; j < pixelArray[i]; j++) {
+          imgData[((y + pixel - i) * 4 * image.width) + ((x + pixel + 1 + i) * 4 + (4 * j) - 1)] = avgBotTriRed;
+          imgData[((y + pixel - i) * 4 * image.width) + ((x + pixel + 1 + i) * 4 + 1 + (4 * j) - 1)] = avgBotTriGreen;
+          imgData[((y + pixel - i) * 4 * image.width) + ((x + pixel + 1 + i) * 4 + 2 + (4 * j) - 1)] = avgBotTriBlue;
+        }
+      }
+    }
+  }
+  context.putImageData(image, 0, 0);
+};
+
 grayscale.addEventListener('click', applyGrayscale);
 monotone.addEventListener('click', applyMonotone);
 reset.addEventListener('click', resetFilter);
 lowPoly.addEventListener('click', applyLowpoly);
+lowPolyTriangle.addEventListener('click', applyLowpolyTriangle);
